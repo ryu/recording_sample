@@ -31,7 +31,7 @@ class RecordingsController < ApplicationController
 
   def update
     @recording = Recording.find(params[:id])
-    @recording.update_with_document!(document_params)
+    @recording.update_with_new_document!(document_params)
 
     redirect_to @recording
   rescue ActiveRecord::RecordInvalid

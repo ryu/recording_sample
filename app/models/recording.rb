@@ -23,7 +23,7 @@ class Recording < ApplicationRecord
     end
   end
 
-  def update_with_document!(document_params)
+  def update_with_new_document!(document_params)
     self.class.transaction do
       document = Document.create!(document_params)
 
