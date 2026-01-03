@@ -1,0 +1,26 @@
+<h1><%= @recording.recordable.title %></h1>
+
+<p>
+  <%= @recording.recordable.body %>
+</p>
+
+<h2>History</h2>
+
+<ul>
+  <% @recording.events.order(:created_at).each do |e| %>
+    <li>
+      <%= e.action_type %>
+      -
+      <%= e.recordable.title %>
+      (<%= e.created_at.strftime("%Y-%m-%d %H:%M") %>)
+    </li>
+  <% end %>
+</ul>
+
+<p>
+  <%= link_to "Edit", edit_recording_path(@recording) %> |
+  <%= link_to "Delete",
+              recording_path(@recording),
+              data: { turbo_method: :delete, turbo_confirm: "Are you sure?" } %> |
+  <%= link_to "Back", recordings_path %>
+</p>

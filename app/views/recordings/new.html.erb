@@ -1,0 +1,17 @@
+<h1>New Recording</h1>
+
+<%= form_with url: recordings_path do |f| %>
+  <div>
+    <label>Title</label>
+    <%= text_field_tag "document[title]" %>
+  </div>
+
+  <div>
+    <label>Body</label>
+    <%= text_field_tag "document[body]" %>
+  </div>
+
+  <%= f.submit "Create" %>
+<% end %>
+
+<%= link_to "Back", recordings_path %>

@@ -1,0 +1,12 @@
+<h1>Recordings</h1>
+
+<%= link_to "New Recording", new_recording_path %>
+
+
+<ul>
+  <% @recordings.each do |r| %>
+    <li>
+      <%= link_to r.recordable.title, recording_path(r) %>
+    </li>
+  <% end %>
+</ul>

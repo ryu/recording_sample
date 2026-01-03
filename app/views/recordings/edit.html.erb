@@ -1,0 +1,19 @@
+<h1>Edit Recording</h1>
+
+<%= form_with url: recording_path(@recording), method: :patch do |f| %>
+  <div>
+    <label>Title</label>
+    <%= text_field_tag "document[title]", @document.title %>
+  </div>
+
+  <div>
+    <label>Body</label>
+    <%= text_area_tag "document[body]", @document.body %>
+  </div>
+
+  <%= f.submit "Update" %>
+<% end %>
+
+<p>
+  <%= link_to "Back", recording_path(@recording) %>
+</p>
