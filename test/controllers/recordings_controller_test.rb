@@ -2,22 +2,25 @@ require "test_helper"
 
 class RecordingsControllerTest < ActionDispatch::IntegrationTest
   test "should get index" do
-    get recordings_index_url
+    get recordings_url
     assert_response :success
   end
 
   test "should get new" do
-    get recordings_new_url
+    get new_recording_url
     assert_response :success
   end
 
-  test "should get create" do
-    get recordings_create_url
-    assert_response :success
+  test "should create recording" do
+    assert_difference ["Document.count", "Recording.count"], +1 do
+      post recordings_url, params: { document: { title: "v1", body: "body1" } }
+    end
+    assert_response :redirect
   end
 
-  test "should get show" do
-    get recordings_show_url
+  test "should show recording" do
+    recording = Recording.create_with_document!(title: "v1", body: "body1")
+    get recording_url(recording)
     assert_response :success
   end
 end

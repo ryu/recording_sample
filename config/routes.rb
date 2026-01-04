@@ -1,4 +1,4 @@
 Rails.application.routes.draw do
-  resources :recordings, only: [:index, :new, :create, :show, :edit, :update, :destroy]
+  resources :recordings
   root "recordings#index"
 end

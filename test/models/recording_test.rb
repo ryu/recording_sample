@@ -78,4 +78,16 @@ class RecordingTest < ActiveSupport::TestCase
     assert_equal recording,   last_event.recording
     assert_equal recording.recordable, last_event.recordable
   end
+
+  test "update_with_new_document! raises when recoding is deleted" do
+    recording = Recording.create_with_document!({ title: "v1", body: "body1" })
+    recording.soft_delete_with_event!
+    recording.reload
+
+    assert recording.deleted?
+
+    assert_raises(RuntimeError) do
+      recording.update_with_new_document!({ title: "v2", body: "body2" })
+    end
+  end
 end
