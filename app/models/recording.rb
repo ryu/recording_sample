@@ -74,7 +74,7 @@ class Recording < ApplicationRecord
       previous = recordable
       document = Document.create!(document_params)
       update!(recordable: document)
-      [previous, document]
+      [ previous, document ]
     end
 
     def add_updated_event!(previous, document, actor_name:, metadata:)

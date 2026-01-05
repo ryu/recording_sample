@@ -67,6 +67,6 @@ class RecordingsController < ApplicationController
   private
 
     def document_params
-      params.expect(document: [:title, :body])
+      params.expect(document: [ :title, :body ])
     end
 end

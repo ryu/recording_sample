@@ -44,7 +44,6 @@ class RecordingsControllerTest < ActionDispatch::IntegrationTest
 
     last_event = recording.events.order(:created_at).last
     assert_equal "updated", last_event.action_type
-    assert_equal ["title"], last_event.metadata["changed_fields"]
+    assert_equal [ "title" ], last_event.metadata["changed_fields"]
   end
-
 end
