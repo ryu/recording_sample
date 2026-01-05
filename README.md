@@ -225,6 +225,8 @@ View は **domain の言葉だけ**を使う。
 この3つを分けることで、
 **更新・履歴・監査を同時にシンプルに扱える**設計になる。
 
+---
+
 ## Anti-patterns
 
 このアプリ（Recording / Document / Event 設計）を前提とした
