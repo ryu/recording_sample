@@ -86,8 +86,36 @@ class RecordingTest < ActiveSupport::TestCase
 
     assert recording.deleted?
 
-    assert_raises(RuntimeError) do
+    assert_raises(Recording::DeletedRecordingError) do
       recording.update_with_new_document!({ title: "v2", body: "body2" })
     end
+  end
+
+  test "restore_with_event! clears deleted_at and adds restored event" do
+    recording = Recording.create_with_document!({ title: "v1", body: "body1" }, actor_name: "web")
+    recording.soft_delete_with_event!
+    recording.reload
+
+    assert recording.deleted?
+
+    assert_difference "recording.events.count", +1 do
+      recording.restore_with_event!
+    end
+
+    recording.reload
+    assert_not recording.deleted?
+
+    last_event = recording.events.order(:created_at).last
+    assert_equal "restored", last_event.action_type
+    assert_equal recording, last_event.recording
+    assert_equal recording.recordable, last_event.recordable
+  end
+
+  test "events store actor_name when provided" do
+    recording = Recording.create_with_document!({ title: "v1", body: "body1" }, actor_name: "web")
+
+    event = recording.events.order(:created_at).last
+    assert_equal "created", event.action_type
+    assert_equal "web", event.actor_name
   end
 end

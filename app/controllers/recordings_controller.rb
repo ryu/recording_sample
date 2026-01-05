@@ -1,4 +1,11 @@
 class RecordingsController < ApplicationController
+  rescue_from Recording::DeletedRecordingError do
+    redirect_to recordings_path, status: :see_other, alert: "削除済みのため更新できません。"
+  end
+
+  rescue_from Recording::NotDeletedRecordingError do
+    redirect_to recording_path, status: :see_other, alert: "削除されていないため復元できません。"
+  end
   def index
     @recordings = Recording.active
                            .documents
@@ -12,7 +19,9 @@ class RecordingsController < ApplicationController
   end
 
   def create
-    @recording = Recording.create_with_document!(document_params)
+    audit = { source: "web", request_id: request.request_id }
+
+    @recording = Recording.create_with_document!(document_params, actor_name: "web", metadata: audit)
     redirect_to @recording
   rescue ActiveRecord::RecordInvalid
     @recording ||= Recording.new
@@ -22,6 +31,7 @@ class RecordingsController < ApplicationController
 
   def show
     @recording = Recording.find(params[:id])
+    @events = @recording.events.recent.includes(:recordable)
   end
 
   def edit
@@ -30,22 +40,28 @@ class RecordingsController < ApplicationController
   end
 
   def update
-    @recording = Recording.find(params[:id])
-    @recording.update_with_new_document!(document_params)
+    recording = Recording.find(params[:id])
+    audit = { source: "web", request_id: request.request_id }
+    recording.update_with_new_document!(document_params, actor_name: "web", metadata: audit)
 
-    redirect_to @recording
-  rescue ActiveRecord::RecordInvalid
-    @document = @recording.recordable
-    render :edit, status: :unprocessable_entity
+    redirect_to recording_path(recording), status: :see_other, notice: "更新しました。"
   end
 
   def destroy
     @recording = Recording.find(params[:id])
-    @recording.soft_delete_with_event!
+    audit = { source: "web", request_id: request.request_id }
+    @recording.soft_delete_with_event!(actor_name: "web", metadata: audit)
 
-    redirect_to recordings_path, notice: "Recording was deleted."
+    redirect_to recordings_path, notice: "削除しました。"
   rescue ActiveRecord::RecordInvalid
     redirect_to @recording, alert: "Failed to delete recording."
+  end
+
+  def restore
+    recording = Recording.find(params[:id])
+    audit = { source: "web", request_id: request.request_id }
+    recording.restore_with_event!(actor_name: "web", metadata: audit)
+    redirect_to recordings_path, status: :see_other, notice: "復元しました。"
   end
 
   private
