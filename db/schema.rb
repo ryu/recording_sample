@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_03_015559) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_05_082108) do
   create_table "documents", force: :cascade do |t|
     t.text "body"
     t.datetime "created_at", null: false
@@ -20,11 +20,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_03_015559) do
 
   create_table "events", force: :cascade do |t|
     t.string "action_type"
+    t.integer "actor_id"
+    t.string "actor_name"
     t.datetime "created_at", null: false
+    t.json "metadata", default: {}
     t.integer "recordable_id"
     t.string "recordable_type"
     t.integer "recording_id", null: false
     t.datetime "updated_at", null: false
+    t.index ["actor_id"], name: "index_events_on_actor_id"
+    t.index ["actor_name"], name: "index_events_on_actor_name"
     t.index ["recordable_type", "recordable_id"], name: "index_events_on_recordable"
     t.index ["recording_id"], name: "index_events_on_recording_id"
   end
