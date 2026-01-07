@@ -83,7 +83,7 @@
     <orderEntry type="library" scope="PROVIDED" name="matrix (v0.4.3, mise: 3.4.8) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="mini_magick (v5.3.1, mise: 3.4.8) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="mini_mime (v1.1.5, mise: 3.4.8) [gem]" level="application" />
-    <orderEntry type="library" scope="TEST" name="minitest (v5.27.0, mise: 3.4.8) [gem]" level="application" />
+    <orderEntry type="library" scope="TEST" name="minitest (v6.0.1, mise: 3.4.8) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="msgpack (v1.8.0, mise: 3.4.8) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="net-imap (v0.6.2, mise: 3.4.8) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="net-pop (v0.1.2, mise: 3.4.8) [gem]" level="application" />
