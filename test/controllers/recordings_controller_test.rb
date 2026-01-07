@@ -12,7 +12,7 @@ class RecordingsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should create recording" do
-    assert_difference ["Document.count", "Recording.count"], +1 do
+    assert_difference [ "Document.count", "Recording.count" ], +1 do
       post recordings_url, params: { document: { title: "v1", body: "body1" } }
     end
     assert_response :redirect
