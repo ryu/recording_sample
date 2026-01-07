@@ -5,7 +5,7 @@ class RecordingTest < ActiveSupport::TestCase
   test "create_with_document! creates document, recording and created event" do
     params = { title: "v1", body: "body1" }
 
-    assert_difference ["Document.count", "Recording.count", "Event.count"], +1 do
+    assert_difference [ "Document.count", "Recording.count", "Event.count" ], +1 do
       recording = Recording.create_with_document!(params)
 
       assert_instance_of Recording, recording
@@ -71,7 +71,7 @@ class RecordingTest < ActiveSupport::TestCase
     assert_not_nil recording.deleted_at
 
     refute_includes Recording.active, recording
-    assert_includes  Recording.deleted, recording
+    assert_includes Recording.deleted, recording
 
     last_event = recording.events.order(:created_at).last
     assert_equal "destroyed", last_event.action_type
