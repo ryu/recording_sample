@@ -7,12 +7,18 @@
 <h2>History</h2>
 
 <ul>
-  <% @recording.events.order(:created_at).each do |e| %>
+  <% @recording.events.recent.each do |e| %>
     <li>
-      <%= e.action_type %>
-      -
-      <%= e.recordable.title %>
-      (<%= e.created_at.strftime("%Y-%m-%d %H:%M") %>)
+      <%= e.action_label %>
+      <% if e.title_changed? %>
+        （title）
+      <% end %>
+      —
+      <%= e.recordable_title %>
+      <% if e.actor_label %>
+        by <%= e.actor_label %>
+      <% end %>
+      （<%= l e.created_at, format: :short %>）
     </li>
   <% end %>
 </ul>
@@ -24,3 +30,9 @@
               data: { turbo_method: :delete, turbo_confirm: "Are you sure?" } %> |
   <%= link_to "Back", recordings_path %>
 </p>
+
+<% if @recording.deleted? %>
+  <p>
+    <%= button_to "Restore", restore_recording_path(@recording), method: :post %>
+  </p>
+<% end %>
