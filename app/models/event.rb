@@ -5,7 +5,7 @@ class Event < ApplicationRecord
     "created"   => "作成",
     "updated"   => "更新",
     "destroyed" => "削除",
-    "restored"  => "復元",
+    "restored"  => "復元"
   }.freeze
 
   belongs_to :recording

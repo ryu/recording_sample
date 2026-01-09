@@ -204,7 +204,7 @@ class RecordingTest < ActiveSupport::TestCase
 
     event = recording.events.order(:created_at).last
     assert_equal "updated", event.action_type
-    assert_equal ["title"], event.metadata["changed_fields"]
+    assert_equal [ "title" ], event.metadata["changed_fields"]
   end
 
   test "restore_with_event! raises when recording is not deleted" do

@@ -12,7 +12,7 @@ module Recording::DocumentUpdating
       previous = recordable
       document = Document.create!(document_params)
       update!(recordable: document)
-      [previous, document]
+      [ previous, document ]
     end
 
     def changed_fields_for(previous, current)
