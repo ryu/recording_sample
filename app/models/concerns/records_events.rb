@@ -1,4 +1,3 @@
-# app/models/concerns/records_events.rb
 module RecordsEvents
   extend ActiveSupport::Concern
 

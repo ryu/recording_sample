@@ -1,4 +1,3 @@
-# app/models/event.rb
 class Event < ApplicationRecord
   ACTIONS = %w[created updated destroyed restored].freeze
 
@@ -6,7 +5,7 @@ class Event < ApplicationRecord
     "created"   => "作成",
     "updated"   => "更新",
     "destroyed" => "削除",
-    "restored"  => "復元"
+    "restored"  => "復元",
   }.freeze
 
   belongs_to :recording
@@ -41,7 +40,7 @@ class Event < ApplicationRecord
     Array(metadata_hash["changed_fields"])
   end
 
-  # --- Predicates (small, readable) ---
+  # --- Predicates ---
 
   def updated?
     action_type == "updated"
