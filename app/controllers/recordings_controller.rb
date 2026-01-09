@@ -6,9 +6,12 @@ class RecordingsController < ApplicationController
   rescue_from Recording::NotDeletedRecordingError do
     redirect_to recording_path, status: :see_other, alert: "削除されていないため復元できません。"
   end
+
+  rescue_from Recording::UnsupportedRecordableError do
+    redirect_to recordings_path, status: :see_other, alert: "この種類は更新できません。"
+  end
   def index
     @recordings = Recording.active
-                           .documents
                            .includes(:recordable)
                            .order(created_at: :desc)
   end
@@ -16,16 +19,26 @@ class RecordingsController < ApplicationController
   def new
     @recording = Recording.new
     @document = Document.new
+    @article = Article.new
   end
 
   def create
     audit = { source: "web", request_id: request.request_id }
 
-    @recording = Recording.create_with_document!(document_params, actor_name: "web", metadata: audit)
+    @recording =
+      if params[:document]
+        Recording.create_with_document!(document_params, actor_name: "web", metadata: audit)
+      elsif params[:article]
+        Recording.create_with_article!(document_params, actor_name: "web", metadata: audit)
+      else
+        raise ActionController::BadRequest, "missing document/article params"
+      end
+
     redirect_to @recording
   rescue ActiveRecord::RecordInvalid
     @recording ||= Recording.new
-    @document ||= Document.new(document_params)
+    @document ||= Document.new(document_params) if params[:document]
+    @article ||= Article.new(document_params) if params[:article]
     render :new, status: :unprocessable_entity
   end
 
@@ -68,5 +81,9 @@ class RecordingsController < ApplicationController
 
     def document_params
       params.expect(document: [ :title, :body ])
+    end
+
+    def article_params
+      params.expect(article: [ :title, :body, :url ])
     end
 end

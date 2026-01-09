@@ -2,11 +2,19 @@
 
 <%= link_to "New Recording", new_recording_path %>
 
-
 <ul>
   <% @recordings.each do |r| %>
     <li>
       <%= link_to r.recordable.title, recording_path(r) %>
+
+      <% if r.article? && r.recordable.url.present? %>
+        —
+        <%= link_to r.recordable.url, r.recordable.url, target: "_blank", rel: "noopener" %>
+      <% end %>
+
+      <small>
+        （<%= r.recordable_type %>）
+      </small>
     </li>
   <% end %>
 </ul>

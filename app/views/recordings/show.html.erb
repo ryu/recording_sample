@@ -1,5 +1,11 @@
 <h1><%= @recording.recordable.title %></h1>
 
+<% if @recording.article? && @recording.recordable.url.present? %>
+  <p>
+    <%= link_to @recording.recordable.url, @recording.recordable.url, target: "_blank", rel: "noopener" %>
+  </p>
+<% end %>
+
 <p>
   <%= @recording.recordable.body %>
 </p>

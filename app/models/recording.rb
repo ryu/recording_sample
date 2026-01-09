@@ -16,6 +16,10 @@ class Recording < ApplicationRecord
     deleted_at.present?
   end
 
+  def article?
+    recordable_type == "Article"
+  end
+
   # --- Public API (use cases) ---
 
   def self.create_with_document!(document_params, actor_name: nil, metadata: nil)
