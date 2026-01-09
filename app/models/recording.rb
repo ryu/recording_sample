@@ -2,8 +2,9 @@ class Recording < ApplicationRecord
   include RecordsEvents
   class DeletedRecordingError < StandardError; end
   class NotDeletedRecordingError < StandardError; end
+  class UnsupportedRecordableError < StandardError; end
 
-  delegated_type :recordable, types: %w[Document], inverse_of: :recording
+  delegated_type :recordable, types: %w[Document Article], inverse_of: :recording
 
   scope :active,  -> { where(deleted_at: nil) }
   scope :deleted, -> { where.not(deleted_at: nil) }
@@ -15,19 +16,19 @@ class Recording < ApplicationRecord
   # --- Public API (use cases) ---
 
   def self.create_with_document!(document_params, actor_name: nil, metadata: nil)
-    transaction do
-      document  = Document.create!(document_params)
-      recording = create!(recordable: document)
+    document  = Document.create!(document_params)
+    create_with_recordable!(document, actor_name: actor_name, metadata: metadata)
+  end
 
-      recording.add_event!("created", document, actor_name: actor_name, metadata: metadata)
-
-      recording
-    end
+  def self.create_with_article!(article_params, actor_name: nil, metadata: nil)
+    article = Article.create!(article_params)
+    create_with_recordable!(article, actor_name: actor_name, metadata: metadata)
   end
 
   def update_with_new_document!(document_params, actor_name: nil, metadata: nil)
     transaction do
       ensure_not_deleted!
+      ensure_document_recording!
 
       previous, document = build_new_document_and_swap!(document_params)
 
@@ -86,4 +87,19 @@ class Recording < ApplicationRecord
 
       add_event!("updated", document, actor_name: actor_name, metadata: event_metadata)
     end
+
+    def ensure_document_recording!
+      return if recordable_type == "Document"
+      raise UnsupportedRecordableError, "cannot update as Document for #{recordable_type}"
+    end
+
+    def self.create_with_recordable!(recordable, actor_name:, metadata:)
+      transaction do
+        recording = create!(recordable: recordable)
+        recording.add_event!("created", recordable, actor_name: actor_name, metadata: metadata)
+        recording
+      end
+    end
+
+    private_class_method :create_with_recordable!
 end
