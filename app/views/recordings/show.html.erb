@@ -25,6 +25,22 @@
         by <%= e.actor_label %>
       <% end %>
       （<%= l e.created_at, format: :short %>）
+
+      <% if e.action_type == "updated" %>
+        <details>
+          <summary>Show changes</summary>
+
+          <p><strong>Before</strong></p>
+          <pre><%= e.metadata.dig("before", "title") %>
+
+            <%= e.metadata.dig("before", "body") %></pre>
+
+          <p><strong>After</strong></p>
+          <pre><%= e.metadata.dig("after", "title") %>
+
+            <%= e.metadata.dig("after", "body") %></pre>
+        </details>
+      <% end %>
     </li>
   <% end %>
 </ul>
