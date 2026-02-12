@@ -29,7 +29,7 @@ class RecordingsController < ApplicationController
       if params[:document]
         Recording.create_with_document!(document_params, actor_name: "web", metadata: audit)
       elsif params[:article]
-        Recording.create_with_article!(document_params, actor_name: "web", metadata: audit)
+        Recording.create_with_article!(article_params, actor_name: "web", metadata: audit)
       else
         raise ActionController::BadRequest, "missing document/article params"
       end
@@ -38,7 +38,7 @@ class RecordingsController < ApplicationController
   rescue ActiveRecord::RecordInvalid
     @recording ||= Recording.new
     @document ||= Document.new(document_params) if params[:document]
-    @article ||= Article.new(document_params) if params[:article]
+    @article ||= Article.new(article_params) if params[:article]
     render :new, status: :unprocessable_entity
   end
 
