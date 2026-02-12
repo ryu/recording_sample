@@ -25,7 +25,9 @@ module Recording::DocumentUpdating
       event_metadata =
         merge_metadata(
           metadata,
-          "changed_fields" => changed_fields_for(previous, document)
+          "changed_fields" => changed_fields_for(previous, document),
+          "before" => { "title" => previous.title, "body" => previous.body },
+          "after" => { "title" => document.title, "body" => document.body }
         )
 
       add_event!("updated", document, actor_name: actor_name, metadata: event_metadata)
