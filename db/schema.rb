@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_09_125323) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_12_055104) do
   create_table "articles", force: :cascade do |t|
     t.text "body"
     t.datetime "created_at", null: false
@@ -35,11 +35,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_09_125323) do
     t.integer "recordable_id"
     t.string "recordable_type"
     t.integer "recording_id", null: false
+    t.string "request_id"
+    t.string "source"
     t.datetime "updated_at", null: false
     t.index ["actor_id"], name: "index_events_on_actor_id"
     t.index ["actor_name"], name: "index_events_on_actor_name"
     t.index ["recordable_type", "recordable_id"], name: "index_events_on_recordable"
     t.index ["recording_id"], name: "index_events_on_recording_id"
+    t.index ["request_id"], name: "index_events_on_request_id"
   end
 
   create_table "recordings", force: :cascade do |t|
