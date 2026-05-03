@@ -13,7 +13,7 @@
 <h2>History</h2>
 
 <ul>
-  <% @recording.events.recent.each do |e| %>
+  <% @events.each do |e| %>
     <li>
       <%= e.action_label %>
       <% if e.title_changed? %>
@@ -55,6 +55,6 @@
 
 <% if @recording.deleted? %>
   <p>
-    <%= button_to "Restore", restore_recording_path(@recording), method: :post %>
+    <%= button_to "Restore", restore_recording_path(@recording), method: :patch %>
   </p>
 <% end %>

@@ -8,6 +8,13 @@ module Recording::DocumentUpdating
       raise Recording::UnsupportedRecordableError, "cannot update as Document for #{recordable_type}"
     end
 
+    def swap_and_record_update!(document_params, actor_name:, metadata:)
+      return if changed_fields_for(recordable, Document.new(document_params)).empty?
+
+      previous, document = build_new_document_and_swap!(document_params)
+      add_updated_event!(previous, document, actor_name: actor_name, metadata: metadata)
+    end
+
     def build_new_document_and_swap!(document_params)
       previous = recordable
       document = Document.create!(document_params)
@@ -18,6 +25,7 @@ module Recording::DocumentUpdating
     def changed_fields_for(previous, current)
       changed = []
       changed << "title" if previous.title != current.title
+      changed << "body"  if previous.body  != current.body
       changed
     end
 

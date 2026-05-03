@@ -36,20 +36,18 @@ class Recording < ApplicationRecord
     transaction do
       ensure_not_deleted!
       ensure_document_recording!
-
-      previous, document = build_new_document_and_swap!(document_params)
-      add_updated_event!(previous, document, actor_name: actor_name, metadata: metadata)
-
-      self
+      swap_and_record_update!(document_params, actor_name: actor_name, metadata: metadata)
     end
+    self
   end
 
   def soft_delete_with_event!(actor_name: nil, metadata: nil)
     transaction do
-      add_event!("destroyed", recordable, actor_name: actor_name, metadata: metadata)
+      ensure_not_deleted!
       update!(deleted_at: Time.current)
-      self
+      add_event!("destroyed", recordable, actor_name: actor_name, metadata: metadata)
     end
+    self
   end
 
   def restore_with_event!(actor_name: nil, metadata: nil)
@@ -58,9 +56,8 @@ class Recording < ApplicationRecord
 
       update!(deleted_at: nil)
       add_event!("restored", recordable, actor_name: actor_name, metadata: metadata)
-
-      self
     end
+    self
   end
 
   private

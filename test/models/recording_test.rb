@@ -214,4 +214,34 @@ class RecordingTest < ActiveSupport::TestCase
       recording.restore_with_event!
     end
   end
+
+  test "soft_delete_with_event! raises when already deleted" do
+    recording = Recording.create_with_document!({ title: "v1", body: "body1" })
+    recording.soft_delete_with_event!
+
+    assert_raises(Recording::DeletedRecordingError) do
+      recording.soft_delete_with_event!
+    end
+  end
+
+  test "update_with_new_document! is no-op when nothing changed" do
+    recording = Recording.create_with_document!({ title: "v1", body: "body1" })
+    event_count_before = recording.events.count
+    doc_count_before   = Document.count
+
+    recording.update_with_new_document!({ title: "v1", body: "body1" })
+
+    assert_equal event_count_before, recording.events.count
+    assert_equal doc_count_before, Document.count
+  end
+
+  test "updated event stores changed_fields for body" do
+    recording = Recording.create_with_document!({ title: "v1", body: "body1" })
+
+    recording.update_with_new_document!({ title: "v1", body: "body2" })
+
+    event = recording.events.order(:created_at).last
+    assert_equal "updated", event.action_type
+    assert_equal [ "body" ], event.metadata["changed_fields"]
+  end
 end
