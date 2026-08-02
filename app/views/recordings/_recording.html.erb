@@ -1,0 +1,12 @@
+<li>
+  <%= link_to recording.recordable.title, recording %>
+
+  <% if recording.article? && recording.recordable.url.present? %>
+    —
+    <%= link_to recording.recordable.url, recording.recordable.url, target: "_blank", rel: "noopener" %>
+  <% end %>
+
+  <small>
+    （<%= recording.recordable_type %>）
+  </small>
+</li>

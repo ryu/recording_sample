@@ -1,6 +1,6 @@
-<h1>Edit Recording</h1>
+<h1>New Document</h1>
 
-<%= form_with model: @document, url: @recording, method: :patch do |form| %>
+<%= form_with model: @document do |form| %>
   <div>
     <%= form.label :title %>
     <%= form.text_field :title %>
@@ -11,9 +11,9 @@
     <%= form.text_area :body %>
   </div>
 
-  <%= form.submit "Update" %>
+  <%= form.submit "Create Document" %>
 <% end %>
 
 <p>
-  <%= link_to "Back", @recording %>
+  <%= link_to "Back", recordings_path %>
 </p>

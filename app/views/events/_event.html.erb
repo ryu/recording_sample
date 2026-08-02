@@ -1,0 +1,21 @@
+<li>
+  <%= event.action_label %>
+
+  <% if event.changed_fields.any? %>
+    （<%= event.changed_fields.join(", ") %>）
+  <% end %>
+
+  —
+  <%= event.recordable.title %>
+
+  <% if event.actor_name.present? %>
+    by <%= event.actor_name %>
+  <% end %>
+
+  （<%= l event.created_at, format: :short %>）
+
+  <details>
+    <summary>Show snapshot</summary>
+    <pre><%= event.recordable.body %></pre>
+  </details>
+</li>
