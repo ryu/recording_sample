@@ -13,48 +13,16 @@
 <h2>History</h2>
 
 <ul>
-  <% @events.each do |e| %>
-    <li>
-      <%= e.action_label %>
-      <% if e.title_changed? %>
-        （title）
-      <% end %>
-      —
-      <%= e.recordable_title %>
-      <% if e.actor_label %>
-        by <%= e.actor_label %>
-      <% end %>
-      （<%= l e.created_at, format: :short %>）
-
-      <% if e.action_type == "updated" %>
-        <details>
-          <summary>Show changes</summary>
-
-          <p><strong>Before</strong></p>
-          <pre><%= e.metadata.dig("before", "title") %>
-
-            <%= e.metadata.dig("before", "body") %></pre>
-
-          <p><strong>After</strong></p>
-          <pre><%= e.metadata.dig("after", "title") %>
-
-            <%= e.metadata.dig("after", "body") %></pre>
-        </details>
-      <% end %>
-    </li>
-  <% end %>
+  <%= render @events %>
 </ul>
 
 <p>
-  <%= link_to "Edit", edit_recording_path(@recording) %> |
-  <%= link_to "Delete",
-              recording_path(@recording),
-              data: { turbo_method: :delete, turbo_confirm: "Are you sure?" } %> |
+  <% if @recording.deleted? %>
+    <%= button_to "Restore", recording_restoration_path(@recording) %> |
+  <% else %>
+    <%= link_to "Edit", edit_recording_path(@recording) if @recording.document? %> |
+    <%= link_to "Delete", @recording,
+                data: { turbo_method: :delete, turbo_confirm: "Are you sure?" } %> |
+  <% end %>
   <%= link_to "Back", recordings_path %>
 </p>
-
-<% if @recording.deleted? %>
-  <p>
-    <%= button_to "Restore", restore_recording_path(@recording), method: :patch %>
-  </p>
-<% end %>

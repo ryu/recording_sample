@@ -1,68 +1,58 @@
 class Recording < ApplicationRecord
-  include RecordsEvents
-  include Recording::RecordableCreation
-  include Recording::DocumentUpdating
+  has_many :events, dependent: :destroy
 
-  class DeletedRecordingError < StandardError; end
-  class NotDeletedRecordingError < StandardError; end
-  class UnsupportedRecordableError < StandardError; end
-
-  delegated_type :recordable, types: %w[Document Article], inverse_of: :recording
+  delegated_type :recordable, types: %w[ Document Article ], inverse_of: :recording
 
   scope :active,  -> { where(deleted_at: nil) }
   scope :deleted, -> { where.not(deleted_at: nil) }
+
+  def self.create_for(recordable, actor_name: nil, metadata: nil)
+    transaction do
+      create!(recordable: recordable).tap do |recording|
+        recording.record_event "created", recordable, actor_name: actor_name, metadata: metadata
+      end
+    end
+  end
 
   def deleted?
     deleted_at.present?
   end
 
-  def article?
-    recordable_type == "Article"
-  end
+  def update_document(document, actor_name: nil, metadata: nil)
+    changed_fields = document.changed_fields_from(recordable)
+    return self if changed_fields.empty?
 
-  # --- Public API (use cases) ---
-
-  def self.create_with_document!(document_params, actor_name: nil, metadata: nil)
-    document = Document.create!(document_params)
-    create_with_recordable!(document, actor_name: actor_name, metadata: metadata)
-  end
-
-  def self.create_with_article!(article_params, actor_name: nil, metadata: nil)
-    article = Article.create!(article_params)
-    create_with_recordable!(article, actor_name: actor_name, metadata: metadata)
-  end
-
-  def update_with_new_document!(document_params, actor_name: nil, metadata: nil)
     transaction do
-      ensure_not_deleted!
-      ensure_document_recording!
-      swap_and_record_update!(document_params, actor_name: actor_name, metadata: metadata)
+      update! recordable: document
+      record_event "updated", document, actor_name: actor_name,
+        metadata: metadata.to_h.merge("changed_fields" => changed_fields)
     end
+
     self
   end
 
-  def soft_delete_with_event!(actor_name: nil, metadata: nil)
+  def soft_delete(actor_name: nil, metadata: nil)
     transaction do
-      ensure_not_deleted!
-      update!(deleted_at: Time.current)
-      add_event!("destroyed", recordable, actor_name: actor_name, metadata: metadata)
+      update! deleted_at: Time.current
+      record_event "destroyed", recordable, actor_name: actor_name, metadata: metadata
     end
+
     self
   end
 
-  def restore_with_event!(actor_name: nil, metadata: nil)
+  def restore(actor_name: nil, metadata: nil)
     transaction do
-      raise NotDeletedRecordingError, "not deleted" unless deleted?
-
-      update!(deleted_at: nil)
-      add_event!("restored", recordable, actor_name: actor_name, metadata: metadata)
+      update! deleted_at: nil
+      record_event "restored", recordable, actor_name: actor_name, metadata: metadata
     end
+
     self
   end
 
-  private
+  def record_event(action, recordable, actor_name: nil, metadata: nil)
+    metadata = metadata.to_h.stringify_keys
 
-    def ensure_not_deleted!
-      raise DeletedRecordingError, "deleted recording" if deleted?
-    end
+    events.create! action_type: action, recordable: recordable, actor_name: actor_name,
+      request_id: metadata["request_id"], source: metadata["source"], metadata: metadata
+  end
 end

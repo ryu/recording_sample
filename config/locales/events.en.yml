@@ -1,0 +1,7 @@
+en:
+  events:
+    action_types:
+      created: 作成
+      updated: 更新
+      destroyed: 削除
+      restored: 復元

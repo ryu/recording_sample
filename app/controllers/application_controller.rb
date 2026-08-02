@@ -4,4 +4,9 @@ class ApplicationController < ActionController::Base
 
   # Changes to the importmap will invalidate the etag for HTML responses
   stale_when_importmap_changes
+
+  private
+    def audit_context
+      { actor_name: "web", metadata: { source: "web", request_id: request.request_id } }
+    end
 end
